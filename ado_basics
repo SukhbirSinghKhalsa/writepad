@@ -1,0 +1,114 @@
+local system issues
+ terraform commands manully running
+ install each security tool in your local system
+ repetation of using same set of commands for deploymnt
+ no collobration - running code in local system
+ writing az login
+
+
+ Azure DEVOPS
+
+ 1 REPOS
+ 2 Service Connection
+ 3 Agent Pool
+ 4 Pipelines
+
+no collobration - running code in local system
+Repos --> apka code ek common shared location store
+
+
+Git --> repos to local system, local system to repos, local file tracking
+
+git clone --> repos ko local system copy karwadeta h --> folder with same name as in repos + all the files
+
+folder -- logical partition
+1 working directory
+2 staging area
+3 local repository
+
+wrote some file  in local system --> push to repos
+1 write files --> working directory
+
+2 git add <file name> --> working directory --> staging area
+
+3 git commit -m <short message> --> staging area --> local repostory
+
+4 git push --> local repository --> Repos
+
+
+local system
+
+
+ writing az login
+
+ Service connection --> credential store
+                    --> bridge azure devops and other 3rd party tools --> azure, git, ssh, kubernetes, docker
+
+S
+
+
+
+YAML
+
+key: value
+
+
+YAML
+
+key: value
+
+list = [1,3,45]
+
+- 1
+- 3
+- 45
+
+
+indentation = space
+2 space
+
+trigger: --> to run our pipeline automatically on some event/changes
+pool:    --> to select the agent pool in which our pipeline will run
+
+steps: -- set of commands to run one after another
+
+terraform init --> providers download, backend initialize, module
+backend "azurerem "{}
+
+
+terraform fmt
+terraform validate
+
+az login --> service connection
+terraform plan
+terraform apply
+
+install software - terraform, node, python, react, dotnet
+install testing tools -tflint, tfsec, trufflehog
+
+artifact creation
+artifact publish
+
+display some warning message, success message
+
+
+Assistant --> plugins/extension to make our work easy
+terraform assistant - resource group name, storage account, container name, key, add service connection
+
+steps-
+
+jobs  --> collection of job --> job is collection of steps
+- agent pool --> collection of agents
+- job - individual agent assign
+
+stages --> collection of jobs --> collection of job --> job is collection of steps
+
+
+testing
+testing tools --> output of code -- errors, bugs
+ 
+validation
+
+manual approval
+
+apply
