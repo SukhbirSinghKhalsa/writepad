@@ -8,6 +8,8 @@ jobs:
   terraform-plan:
     runs-on: self-hosted
     steps:
+    - name: Checkout
+      uses: actions/checkout@v6.0.2
     - name: Azure Login
       uses: Azure/login@v3
       with:
