@@ -16,12 +16,17 @@ jobs:
         subscription-id: f3dd8656-66bf-4af3-bce9-c04adf655c30
     - name: Terraform init
       run: terraform init
+      working-directory: environments/sandbox
     - name: Terraform fmt
       run: terraform fmt
+      working-directory: environments/sandbox
     - name: Terraform validate
       run: terraform validate
+      working-directory: environments/sandbox
     - name: Terraform plan
       run: terraform plan
+      working-directory: environments/sandbox
+
     
       
   
