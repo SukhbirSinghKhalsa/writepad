@@ -311,6 +311,226 @@ output "application_gateway_frontend_ip_configuration_private_ips" {
   }
 }
 
+// variables.tf
+variable "application_gateways" {
+  description = "Map of Application Gateways to create. Key is the stable instance key."
+  nullable    = false
+
+  type = map(object({
+    name                = string
+    resource_group_name = string
+    location            = string
+
+    enable_http2 = optional(bool)
+    tags         = optional(map(string))
+
+    identity = optional(object({
+      type         = string
+      identity_ids = optional(list(string))
+    }))
+
+    sku = object({
+      name     = string
+      tier     = string
+      capacity = optional(number)
+    })
+
+    gateway_ip_configuration = object({
+      name      = string
+      subnet_id = string
+    })
+
+    frontend_port = optional(map(object({
+      name = string
+      port = number
+    })), {})
+
+    frontend_ip_configuration = optional(map(object({
+      name                          = string
+      subnet_id                     = optional(string)
+      private_ip_address            = optional(string)
+      private_ip_address_allocation = optional(string) # Static|Dynamic
+      public_ip_address_id          = optional(string)
+    })), {})
+
+    ssl_certificate = optional(map(object({
+      name                = string
+      data                = optional(string) # base64 PFX
+      password            = optional(string)
+      key_vault_secret_id = optional(string)
+    })), {})
+
+    ssl_policy = optional(object({
+      policy_type          = optional(string)
+      policy_name          = optional(string)
+      cipher_suites        = optional(list(string))
+      min_protocol_version = optional(string)
+      disabled_protocols   = optional(list(string))
+    }))
+
+    trusted_root_certificate = optional(map(object({
+      name                = string
+      data                = optional(string)
+      key_vault_secret_id = optional(string)
+    })), {})
+
+    backend_address_pool = optional(map(object({
+      name         = string
+      fqdns        = optional(list(string))
+      ip_addresses = optional(list(string))
+    })), {})
+
+    backend_http_settings = optional(map(object({
+      name                  = string
+      cookie_based_affinity = optional(string)
+      port                  = number
+      protocol              = string
+      request_timeout       = optional(number)
+
+      host_name                           = optional(string)
+      pick_host_name_from_backend_address = optional(bool)
+      probe_name                          = optional(string)
+      path                                = optional(string)
+      affinity_cookie_name                = optional(string)
+      trusted_root_certificate_names      = optional(list(string))
+
+      connection_draining = optional(object({
+        enabled           = bool
+        drain_timeout_sec = number
+      }))
+    })), {})
+
+    probe = optional(map(object({
+      name                                      = string
+      protocol                                  = string
+      path                                      = string
+      host                                      = optional(string)
+      interval                                  = number
+      timeout                                   = number
+      unhealthy_threshold                       = number
+      port                                      = optional(number)
+      pick_host_name_from_backend_http_settings = optional(bool)
+      minimum_servers                           = optional(number)
+
+      match = optional(object({
+        status_code = optional(list(string))
+        body        = optional(string)
+      }))
+    })), {})
+
+    http_listener = optional(map(object({
+      name                           = string
+      frontend_ip_configuration_name = string
+      frontend_port_name             = string
+      protocol                       = string
+      host_name                      = optional(string)
+      host_names                     = optional(list(string))
+      require_sni                    = optional(bool)
+      ssl_certificate_name           = optional(string)
+      firewall_policy_id             = optional(string)
+    })), {})
+
+    request_routing_rule = optional(map(object({
+      name                        = string
+      rule_type                   = string
+      http_listener_name          = string
+      backend_address_pool_name   = optional(string)
+      backend_http_settings_name  = optional(string)
+      priority                    = optional(number)
+      url_path_map_name           = optional(string)
+      redirect_configuration_name = optional(string)
+      rewrite_rule_set_name       = optional(string)
+    })), {})
+
+    redirect_configuration = optional(map(object({
+      name                 = string
+      redirect_type        = string
+      target_listener_name = optional(string)
+      target_url           = optional(string)
+      include_path         = optional(bool)
+      include_query_string = optional(bool)
+    })), {})
+
+    url_path_map = optional(map(object({
+      name                                = string
+      default_backend_address_pool_name   = optional(string)
+      default_backend_http_settings_name  = optional(string)
+      default_redirect_configuration_name = optional(string)
+      default_rewrite_rule_set_name       = optional(string)
+
+      path_rule = optional(map(object({
+        name                        = string
+        paths                       = list(string)
+        backend_address_pool_name   = optional(string)
+        backend_http_settings_name  = optional(string)
+        redirect_configuration_name = optional(string)
+        rewrite_rule_set_name       = optional(string)
+      })), {})
+    })), {})
+
+    rewrite_rule_set = optional(map(object({
+      name = string
+      rewrite_rule = optional(map(object({
+        name          = string
+        rule_sequence = number
+
+        condition = optional(map(object({
+          variable    = string
+          pattern     = string
+          ignore_case = optional(bool)
+          negate      = optional(bool)
+        })), {})
+
+        request_header_configuration = optional(map(object({
+          header_name  = string
+          header_value = string
+        })), {})
+
+        response_header_configuration = optional(map(object({
+          header_name  = string
+          header_value = string
+        })), {})
+
+        url = optional(object({
+          path         = optional(string)
+          query_string = optional(string)
+          reroute      = optional(bool)
+        }))
+      })), {})
+    })), {})
+
+    waf_configuration = optional(object({
+      enabled          = bool
+      firewall_mode    = string # Detection|Prevention
+      rule_set_type    = string # OWASP
+      rule_set_version = string # e.g. 3.2
+
+      file_upload_limit_mb     = optional(number)
+      request_body_check       = optional(bool)
+      max_request_body_size_kb = optional(number)
+
+      disabled_rule_group = optional(map(object({
+        rule_group_name = string
+        rules           = optional(list(number))
+      })), {})
+
+      exclusion = optional(map(object({
+        match_variable          = string
+        selector_match_operator = string
+        selector                = string
+      })), {})
+    }))
+  }))
+
+  validation {
+    condition = alltrue([
+      for k, v in var.application_gateways :
+      trim(v.location) != "" && trim(v.resource_group_name) != "" && trim(v.name) != ""
+    ])
+    error_message = "Each Application Gateway must have non-empty name, resource_group_name, and location."
+  }
+}
+
 module "appgw" {
   source = "./modules/appgw-waf"
 
